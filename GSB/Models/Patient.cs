@@ -12,9 +12,12 @@ namespace GSB.Models
         public int Id { get; set; }
         public double Poids { get; set; }
         public double Taille { get; set; }
-        public bool Sexe { get; set; }
-        public string Pathologie { get; set; }
-        public string NumeroSecu { get; set; }
+        public bool Sexe { get; set; }          // true = Homme, false = Femme
+        public string Pathologie { get; set; } = "";
+        public string NumeroSecu { get; set; } = "";
+
+        // Libellé du sexe pour l'affichage (dérivé du booléen Sexe)
+        public string SexeLibelle => Sexe ? "Homme" : "Femme";
 
         // CONSTRUCTEURS
 

@@ -1,4 +1,4 @@
-﻿namespace GSB
+namespace GSB
 {
     partial class Recherche_patient
     {
@@ -37,247 +37,269 @@
             label7 = new Label();
             label8 = new Label();
             label9 = new Label();
+            label10 = new Label();
+            labelAllergies = new Label();
+            comboBoxPatient = new ComboBox();
+            buttonAddPatient = new Button();
             textBoxName = new TextBox();
             textBoxFirstname = new TextBox();
-            buttonAddPatient = new Button();
             textBoxBirthdate = new TextBox();
+            textBoxSexe = new TextBox();
             textBoxTaille = new TextBox();
             textBoxPoids = new TextBox();
-            textBoxSexe = new TextBox();
-            textBoxPathologie = new TextBox();
             textBoxNumSecu = new TextBox();
-            comboBoxPatient = new ComboBox();
+            textBoxPathologie = new TextBox();
+            clbAllergies = new CheckedListBox();
             buttonModifierPatient = new Button();
             dataGridView1 = new DataGridView();
-            label10 = new Label();
             button3 = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
-            // 
+            //
             // label1
-            // 
+            //
             label1.AutoSize = true;
-            label1.Location = new Point(64, 9);
+            label1.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
+            label1.Location = new Point(40, 20);
             label1.Name = "label1";
-            label1.Size = new Size(65, 25);
+            label1.Size = new Size(100, 38);
             label1.TabIndex = 0;
             label1.Text = "Patient";
-            // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.Location = new Point(64, 107);
-            label2.Name = "label2";
-            label2.Size = new Size(52, 25);
-            label2.TabIndex = 1;
-            label2.Text = "Nom";
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Location = new Point(332, 107);
-            label3.Name = "label3";
-            label3.Size = new Size(74, 25);
-            label3.TabIndex = 2;
-            label3.Text = "Prénom";
-            // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.Location = new Point(64, 259);
-            label4.Name = "label4";
-            label4.Size = new Size(154, 25);
-            label4.TabIndex = 3;
-            label4.Text = "Date de naissance";
-            // 
-            // label5
-            // 
-            label5.AutoSize = true;
-            label5.Location = new Point(278, 259);
-            label5.Name = "label5";
-            label5.Size = new Size(54, 25);
-            label5.TabIndex = 4;
-            label5.Text = "Taille ";
-            label5.Click += label5_Click;
-            // 
-            // label6
-            // 
-            label6.AutoSize = true;
-            label6.Location = new Point(493, 259);
-            label6.Name = "label6";
-            label6.Size = new Size(55, 25);
-            label6.TabIndex = 5;
-            label6.Text = "Poids";
-            // 
-            // label7
-            // 
-            label7.AutoSize = true;
-            label7.Location = new Point(278, 367);
-            label7.Name = "label7";
-            label7.Size = new Size(96, 25);
-            label7.TabIndex = 6;
-            label7.Text = "Pathologie";
-            label7.Click += label7_Click;
-            // 
-            // label8
-            // 
-            label8.AutoSize = true;
-            label8.Location = new Point(64, 367);
-            label8.Name = "label8";
-            label8.Size = new Size(48, 25);
-            label8.TabIndex = 7;
-            label8.Text = "Sexe";
-            // 
-            // label9
-            // 
-            label9.AutoSize = true;
-            label9.Location = new Point(64, 484);
-            label9.Name = "label9";
-            label9.Size = new Size(225, 25);
-            label9.TabIndex = 8;
-            label9.Text = "Numéro de sécurité sociale";
-            label9.Click += label9_Click;
-            // 
-            // textBoxName
-            // 
-            textBoxName.Location = new Point(64, 158);
-            textBoxName.Name = "textBoxName";
-            textBoxName.Size = new Size(213, 31);
-            textBoxName.TabIndex = 9;
-            // 
-            // textBoxFirstname
-            // 
-            textBoxFirstname.Location = new Point(332, 158);
-            textBoxFirstname.Name = "textBoxFirstname";
-            textBoxFirstname.Size = new Size(226, 31);
-            textBoxFirstname.TabIndex = 10;
-            // 
+            //
+            // comboBoxPatient
+            //
+            comboBoxPatient.FormattingEnabled = true;
+            comboBoxPatient.Location = new Point(40, 65);
+            comboBoxPatient.Name = "comboBoxPatient";
+            comboBoxPatient.Size = new Size(300, 33);
+            comboBoxPatient.TabIndex = 1;
+            comboBoxPatient.SelectedIndexChanged += comboBoxPatient_SelectedIndexChanged;
+            //
             // buttonAddPatient
-            // 
-            buttonAddPatient.Location = new Point(493, 47);
+            //
+            buttonAddPatient.Location = new Point(356, 64);
             buttonAddPatient.Name = "buttonAddPatient";
-            buttonAddPatient.Size = new Size(65, 33);
-            buttonAddPatient.TabIndex = 11;
+            buttonAddPatient.Size = new Size(50, 35);
+            buttonAddPatient.TabIndex = 2;
             buttonAddPatient.Text = "+";
             buttonAddPatient.UseVisualStyleBackColor = true;
             buttonAddPatient.Click += button1_Click;
-            // 
+            //
+            // label2
+            //
+            label2.AutoSize = true;
+            label2.Location = new Point(40, 130);
+            label2.Name = "label2";
+            label2.Size = new Size(52, 25);
+            label2.TabIndex = 3;
+            label2.Text = "Nom";
+            //
+            // textBoxName
+            //
+            textBoxName.Location = new Point(40, 160);
+            textBoxName.Name = "textBoxName";
+            textBoxName.Size = new Size(230, 31);
+            textBoxName.TabIndex = 4;
+            //
+            // label3
+            //
+            label3.AutoSize = true;
+            label3.Location = new Point(300, 130);
+            label3.Name = "label3";
+            label3.Size = new Size(74, 25);
+            label3.TabIndex = 5;
+            label3.Text = "Prénom";
+            //
+            // textBoxFirstname
+            //
+            textBoxFirstname.Location = new Point(300, 160);
+            textBoxFirstname.Name = "textBoxFirstname";
+            textBoxFirstname.Size = new Size(230, 31);
+            textBoxFirstname.TabIndex = 6;
+            //
+            // label4
+            //
+            label4.AutoSize = true;
+            label4.Location = new Point(40, 210);
+            label4.Name = "label4";
+            label4.Size = new Size(154, 25);
+            label4.TabIndex = 7;
+            label4.Text = "Date de naissance";
+            //
             // textBoxBirthdate
-            // 
-            textBoxBirthdate.Location = new Point(64, 304);
+            //
+            textBoxBirthdate.Location = new Point(40, 240);
             textBoxBirthdate.Name = "textBoxBirthdate";
-            textBoxBirthdate.Size = new Size(150, 31);
-            textBoxBirthdate.TabIndex = 12;
-            // 
-            // textBoxTaille
-            // 
-            textBoxTaille.Location = new Point(278, 304);
-            textBoxTaille.Name = "textBoxTaille";
-            textBoxTaille.Size = new Size(150, 31);
-            textBoxTaille.TabIndex = 13;
-            // 
-            // textBoxPoids
-            // 
-            textBoxPoids.Location = new Point(496, 304);
-            textBoxPoids.Name = "textBoxPoids";
-            textBoxPoids.Size = new Size(150, 31);
-            textBoxPoids.TabIndex = 14;
-            // 
+            textBoxBirthdate.Size = new Size(230, 31);
+            textBoxBirthdate.TabIndex = 8;
+            //
+            // label8
+            //
+            label8.AutoSize = true;
+            label8.Location = new Point(300, 210);
+            label8.Name = "label8";
+            label8.Size = new Size(45, 25);
+            label8.TabIndex = 9;
+            label8.Text = "Sexe";
+            //
             // textBoxSexe
-            // 
-            textBoxSexe.Location = new Point(64, 419);
+            //
+            textBoxSexe.Location = new Point(300, 240);
             textBoxSexe.Name = "textBoxSexe";
-            textBoxSexe.Size = new Size(150, 31);
-            textBoxSexe.TabIndex = 15;
-            // 
-            // textBoxPathologie
-            // 
-            textBoxPathologie.Location = new Point(278, 419);
-            textBoxPathologie.Name = "textBoxPathologie";
-            textBoxPathologie.Size = new Size(150, 31);
-            textBoxPathologie.TabIndex = 16;
-            // 
+            textBoxSexe.Size = new Size(230, 31);
+            textBoxSexe.TabIndex = 10;
+            //
+            // label5
+            //
+            label5.AutoSize = true;
+            label5.Location = new Point(40, 290);
+            label5.Name = "label5";
+            label5.Size = new Size(90, 25);
+            label5.TabIndex = 11;
+            label5.Text = "Taille (cm)";
+            //
+            // textBoxTaille
+            //
+            textBoxTaille.Location = new Point(40, 320);
+            textBoxTaille.Name = "textBoxTaille";
+            textBoxTaille.Size = new Size(230, 31);
+            textBoxTaille.TabIndex = 12;
+            //
+            // label6
+            //
+            label6.AutoSize = true;
+            label6.Location = new Point(300, 290);
+            label6.Name = "label6";
+            label6.Size = new Size(90, 25);
+            label6.TabIndex = 13;
+            label6.Text = "Poids (kg)";
+            //
+            // textBoxPoids
+            //
+            textBoxPoids.Location = new Point(300, 320);
+            textBoxPoids.Name = "textBoxPoids";
+            textBoxPoids.Size = new Size(230, 31);
+            textBoxPoids.TabIndex = 14;
+            //
+            // label9
+            //
+            label9.AutoSize = true;
+            label9.Location = new Point(40, 370);
+            label9.Name = "label9";
+            label9.Size = new Size(225, 25);
+            label9.TabIndex = 15;
+            label9.Text = "Numéro de sécurité sociale";
+            //
             // textBoxNumSecu
-            // 
-            textBoxNumSecu.Location = new Point(64, 538);
+            //
+            textBoxNumSecu.Location = new Point(40, 400);
             textBoxNumSecu.Name = "textBoxNumSecu";
-            textBoxNumSecu.Size = new Size(327, 31);
-            textBoxNumSecu.TabIndex = 17;
-            // 
-            // comboBoxPatient
-            // 
-            comboBoxPatient.FormattingEnabled = true;
-            comboBoxPatient.Location = new Point(64, 47);
-            comboBoxPatient.Name = "comboBoxPatient";
-            comboBoxPatient.Size = new Size(268, 33);
-            comboBoxPatient.TabIndex = 18;
-            comboBoxPatient.SelectedIndexChanged += comboBoxPatient_SelectedIndexChanged;
-            // 
+            textBoxNumSecu.Size = new Size(490, 31);
+            textBoxNumSecu.TabIndex = 16;
+            //
+            // label7
+            //
+            label7.AutoSize = true;
+            label7.Location = new Point(40, 450);
+            label7.Name = "label7";
+            label7.Size = new Size(96, 25);
+            label7.TabIndex = 17;
+            label7.Text = "Pathologie";
+            //
+            // textBoxPathologie
+            //
+            textBoxPathologie.Location = new Point(40, 480);
+            textBoxPathologie.Name = "textBoxPathologie";
+            textBoxPathologie.Size = new Size(490, 31);
+            textBoxPathologie.TabIndex = 18;
+            //
+            // labelAllergies
+            //
+            labelAllergies.AutoSize = true;
+            labelAllergies.Location = new Point(560, 130);
+            labelAllergies.Name = "labelAllergies";
+            labelAllergies.Size = new Size(80, 25);
+            labelAllergies.TabIndex = 19;
+            labelAllergies.Text = "Allergies";
+            //
+            // clbAllergies
+            //
+            clbAllergies.CheckOnClick = true;
+            clbAllergies.FormattingEnabled = true;
+            clbAllergies.Location = new Point(560, 160);
+            clbAllergies.Name = "clbAllergies";
+            clbAllergies.Size = new Size(240, 351);
+            clbAllergies.TabIndex = 20;
+            //
             // buttonModifierPatient
-            // 
-            buttonModifierPatient.Location = new Point(493, 511);
+            //
+            buttonModifierPatient.Location = new Point(40, 530);
             buttonModifierPatient.Name = "buttonModifierPatient";
-            buttonModifierPatient.Size = new Size(153, 58);
-            buttonModifierPatient.TabIndex = 19;
+            buttonModifierPatient.Size = new Size(230, 50);
+            buttonModifierPatient.TabIndex = 21;
             buttonModifierPatient.Text = "Modifier";
             buttonModifierPatient.UseVisualStyleBackColor = true;
-            // 
-            // dataGridView1
-            // 
-            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(64, 710);
-            dataGridView1.Name = "dataGridView1";
-            dataGridView1.RowHeadersWidth = 62;
-            dataGridView1.Size = new Size(582, 185);
-            dataGridView1.TabIndex = 21;
-            // 
+            //
             // label10
-            // 
+            //
             label10.AutoSize = true;
-            label10.Location = new Point(64, 654);
+            label10.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            label10.Location = new Point(40, 610);
             label10.Name = "label10";
-            label10.Size = new Size(235, 25);
+            label10.Size = new Size(269, 30);
             label10.TabIndex = 22;
             label10.Text = "Historique des ordonnances";
-            // 
+            //
             // button3
-            // 
-            button3.Location = new Point(548, 654);
+            //
+            button3.Location = new Point(750, 605);
             button3.Name = "button3";
-            button3.Size = new Size(98, 44);
+            button3.Size = new Size(50, 35);
             button3.TabIndex = 23;
             button3.Text = "+";
             button3.UseVisualStyleBackColor = true;
             button3.Click += button3_Click;
-            // 
+            //
+            // dataGridView1
+            //
+            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridView1.Location = new Point(40, 650);
+            dataGridView1.Name = "dataGridView1";
+            dataGridView1.RowHeadersWidth = 62;
+            dataGridView1.Size = new Size(760, 150);
+            dataGridView1.TabIndex = 24;
+            //
             // Recherche_patient
-            // 
+            //
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(733, 940);
+            ClientSize = new Size(840, 820);
             Controls.Add(button3);
             Controls.Add(label10);
             Controls.Add(dataGridView1);
             Controls.Add(buttonModifierPatient);
-            Controls.Add(comboBoxPatient);
-            Controls.Add(textBoxNumSecu);
+            Controls.Add(clbAllergies);
+            Controls.Add(labelAllergies);
             Controls.Add(textBoxPathologie);
-            Controls.Add(textBoxSexe);
-            Controls.Add(textBoxPoids);
-            Controls.Add(textBoxTaille);
-            Controls.Add(textBoxBirthdate);
-            Controls.Add(buttonAddPatient);
-            Controls.Add(textBoxFirstname);
-            Controls.Add(textBoxName);
-            Controls.Add(label9);
-            Controls.Add(label8);
             Controls.Add(label7);
+            Controls.Add(textBoxNumSecu);
+            Controls.Add(label9);
+            Controls.Add(textBoxPoids);
             Controls.Add(label6);
+            Controls.Add(textBoxTaille);
             Controls.Add(label5);
+            Controls.Add(textBoxSexe);
+            Controls.Add(label8);
+            Controls.Add(textBoxBirthdate);
             Controls.Add(label4);
+            Controls.Add(textBoxFirstname);
             Controls.Add(label3);
+            Controls.Add(textBoxName);
             Controls.Add(label2);
+            Controls.Add(buttonAddPatient);
+            Controls.Add(comboBoxPatient);
             Controls.Add(label1);
+            StartPosition = FormStartPosition.CenterScreen;
             Name = "Recherche_patient";
             Text = "Recherche de patient";
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
@@ -296,19 +318,21 @@
         private Label label7;
         private Label label8;
         private Label label9;
+        private Label label10;
+        private Label labelAllergies;
+        private ComboBox comboBoxPatient;
+        private Button buttonAddPatient;
         private TextBox textBoxName;
         private TextBox textBoxFirstname;
-        private Button buttonAddPatient;
         private TextBox textBoxBirthdate;
+        private TextBox textBoxSexe;
         private TextBox textBoxTaille;
         private TextBox textBoxPoids;
-        private TextBox textBoxSexe;
-        private TextBox textBoxPathologie;
         private TextBox textBoxNumSecu;
-        private ComboBox comboBoxPatient;
+        private TextBox textBoxPathologie;
+        private CheckedListBox clbAllergies;
         private Button buttonModifierPatient;
         private DataGridView dataGridView1;
-        private Label label10;
         private Button button3;
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 using GSB.Ordonnances.DataAccess;
@@ -8,15 +8,53 @@ namespace GSB.Ordonnances.Controllers
 {
     public class PatientController
     {
+        // Liste des colonnes lues partout : factorisée pour rester cohérente.
+        private const string COLONNES =
+            "numPatient, nom, prenom, dateNaissance, numeroSecu, poids, taille, sexe, pathologie";
+
+        /// <summary>
+        /// Construit un Patient à partir de la ligne courante du lecteur.
+        /// Les colonnes médicales (poids, taille, sexe, pathologie) sont
+        /// nullables en base : on gère les valeurs NULL.
+        /// </summary>
+        private static Patient MapPatient(MySqlDataReader lecteur)
+        {
+            Patient p = new Patient(
+                lecteur.GetString("nom"),
+                lecteur.GetString("prenom"),
+                lecteur.GetDateTime("dateNaissance"),
+                lecteur.GetString("numeroSecu")
+            );
+            p.Id = lecteur.GetInt32("numPatient");
+            p.Poids = lecteur.IsDBNull(lecteur.GetOrdinal("poids")) ? 0 : (double)lecteur.GetDecimal("poids");
+            p.Taille = lecteur.IsDBNull(lecteur.GetOrdinal("taille")) ? 0 : (double)lecteur.GetDecimal("taille");
+            p.Sexe = !lecteur.IsDBNull(lecteur.GetOrdinal("sexe")) && lecteur.GetBoolean("sexe");
+            p.Pathologie = lecteur.IsDBNull(lecteur.GetOrdinal("pathologie")) ? "" : lecteur.GetString("pathologie");
+            return p;
+        }
+
+        /// <summary>
+        /// Ajoute les paramètres communs aux requêtes d'écriture (INSERT/UPDATE).
+        /// </summary>
+        private static void AjouterParametresPatient(MySqlCommand cmd, Patient p)
+        {
+            cmd.Parameters.AddWithValue("@nom", p.Name);
+            cmd.Parameters.AddWithValue("@prenom", p.Firstname);
+            cmd.Parameters.AddWithValue("@dateNaissance", p.Birthdate);
+            cmd.Parameters.AddWithValue("@numeroSecu", p.NumeroSecu);
+            cmd.Parameters.AddWithValue("@poids", p.Poids);
+            cmd.Parameters.AddWithValue("@taille", p.Taille);
+            cmd.Parameters.AddWithValue("@sexe", p.Sexe);
+            cmd.Parameters.AddWithValue("@pathologie", p.Pathologie ?? "");
+        }
+
         /// <summary>
         /// Recupere tous les patients de la base, tries par nom puis prenom.
         /// </summary>
         public List<Patient> ObtenirTousLesPatients()
         {
             List<Patient> patients = new List<Patient>();
-            string sql = "SELECT numPatient, nom, prenom, dateNaissance, numeroSecu " +
-                         "FROM PATIENT " +
-                         "ORDER BY nom, prenom";
+            string sql = "SELECT " + COLONNES + " FROM PATIENT ORDER BY nom, prenom";
 
             using (MySqlConnection cnx = DbConnexion.Ouvrir())
             using (MySqlCommand cmd = new MySqlCommand(sql, cnx))
@@ -24,14 +62,7 @@ namespace GSB.Ordonnances.Controllers
             {
                 while (lecteur.Read())
                 {
-                    Patient p = new Patient(
-                        lecteur.GetString("nom"),
-                        lecteur.GetString("prenom"),
-                        lecteur.GetDateTime("dateNaissance"),
-                        lecteur.GetString("numeroSecu")
-                    );
-                    p.Id = lecteur.GetInt32("numPatient");
-                    patients.Add(p);
+                    patients.Add(MapPatient(lecteur));
                 }
             }
             return patients;
@@ -46,8 +77,7 @@ namespace GSB.Ordonnances.Controllers
             List<Patient> liste = new List<Patient>();
 
             // Utilisation du parametre nomme @motCle
-            string requete = "SELECT numPatient, nom, prenom, dateNaissance, numeroSecu " +
-                             "FROM PATIENT " +
+            string requete = "SELECT " + COLONNES + " FROM PATIENT " +
                              "WHERE nom LIKE @motCle " +
                              "ORDER BY nom, prenom";
 
@@ -62,18 +92,7 @@ namespace GSB.Ordonnances.Controllers
                 {
                     while (lecteur.Read())
                     {
-                        // CORRECTION 2 : Utilisation du constructeur existant
-                        Patient p = new Patient(
-                            lecteur.GetString("nom"),
-                            lecteur.GetString("prenom"),
-                            lecteur.GetDateTime("dateNaissance"),
-                            lecteur.GetString("numeroSecu")
-                        );
-
-                        // Assignation de la propriete C# pour l'ID
-                        p.Id = lecteur.GetInt32("numPatient");
-
-                        liste.Add(p);
+                        liste.Add(MapPatient(lecteur));
                     }
                 }
             }
@@ -86,18 +105,14 @@ namespace GSB.Ordonnances.Controllers
         /// </summary>
         public int AjouterPatient(Patient p)
         {
-            string sql = "INSERT INTO PATIENT (nom, prenom, dateNaissance, numeroSecu) " +
-                         "VALUES (@nom, @prenom, @dateNaissance, @numeroSecu); " +
+            string sql = "INSERT INTO PATIENT (nom, prenom, dateNaissance, numeroSecu, poids, taille, sexe, pathologie) " +
+                         "VALUES (@nom, @prenom, @dateNaissance, @numeroSecu, @poids, @taille, @sexe, @pathologie); " +
                          "SELECT LAST_INSERT_ID();";
 
             using (MySqlConnection cnx = DbConnexion.Ouvrir())
             using (MySqlCommand cmd = new MySqlCommand(sql, cnx))
             {
-                cmd.Parameters.AddWithValue("@nom", p.Name);
-                cmd.Parameters.AddWithValue("@prenom", p.Firstname);
-                cmd.Parameters.AddWithValue("@dateNaissance", p.Birthdate);
-                cmd.Parameters.AddWithValue("@numeroSecu", p.NumeroSecu);
-
+                AjouterParametresPatient(cmd, p);
                 int id = Convert.ToInt32(cmd.ExecuteScalar());
                 p.Id = id;
                 return id;
@@ -112,16 +127,14 @@ namespace GSB.Ordonnances.Controllers
         {
             string sql = "UPDATE PATIENT " +
                          "SET nom = @nom, prenom = @prenom, " +
-                         "    dateNaissance = @dateNaissance, numeroSecu = @numeroSecu " +
+                         "    dateNaissance = @dateNaissance, numeroSecu = @numeroSecu, " +
+                         "    poids = @poids, taille = @taille, sexe = @sexe, pathologie = @pathologie " +
                          "WHERE numPatient = @id";
 
             using (MySqlConnection cnx = DbConnexion.Ouvrir())
             using (MySqlCommand cmd = new MySqlCommand(sql, cnx))
             {
-                cmd.Parameters.AddWithValue("@nom", p.Name);
-                cmd.Parameters.AddWithValue("@prenom", p.Firstname);
-                cmd.Parameters.AddWithValue("@dateNaissance", p.Birthdate);
-                cmd.Parameters.AddWithValue("@numeroSecu", p.NumeroSecu);
+                AjouterParametresPatient(cmd, p);
                 cmd.Parameters.AddWithValue("@id", p.Id);
 
                 int lignesAffectees = cmd.ExecuteNonQuery();

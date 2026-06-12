@@ -39,6 +39,10 @@ namespace GSB
             {
                 MessageBox.Show("Le numéro RPPS doit contenir exactement 11 caractères.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+            else if (!email.Contains('@') || !email.Contains('.'))
+            {
+                MessageBox.Show("L'adresse email n'est pas valide.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
             else if (mdp != confirmation)
             {
                 MessageBox.Show("Les mots de passe ne correspondent pas.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -66,8 +70,8 @@ namespace GSB
                 }
                 catch (MySqlException ex) when (ex.Number == 1062)
                 {
-                    // Violation de la contrainte UNIQUE sur numeroRPPS
-                    MessageBox.Show("Un médecin avec ce numéro RPPS existe déjà.",
+                    // Violation d'une contrainte UNIQUE (numeroRPPS ou email)
+                    MessageBox.Show("Un médecin avec ce numéro RPPS ou cet email existe déjà.",
                         "Doublon", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
                 catch (MySqlException ex)

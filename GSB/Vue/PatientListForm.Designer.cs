@@ -82,8 +82,9 @@
             Controls.Add(btnRechercher);
             Controls.Add(txtRecherche);
             Controls.Add(dgvPatients);
+            StartPosition = FormStartPosition.CenterScreen;
             Name = "PatientListForm";
-            Text = "PatientListForm";
+            Text = "Liste des patients";
             Load += PatientListForm_Load;
             ((System.ComponentModel.ISupportInitialize)dgvPatients).EndInit();
             ResumeLayout(false);

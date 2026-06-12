@@ -14,19 +14,22 @@ namespace GSB.Models
         // Spécialité du médecin (colonne SQL specialite)
         public string Specialite { get; set; } = "";
 
-        private String email;
+        // Email du médecin (colonne SQL email), utilisable comme identifiant
+        // de connexion au même titre que le numéro RPPS.
+        public string Email { get; set; } = "";
+
         private String rpps;
         private String password;
 
         // ACCESSEURS
         public String getRpps() { return rpps; }
-        public String getEmail() { return email; }
+        public String getEmail() { return Email; }
         public String getPassword() { return password; }
 
         ///MUTATEURS
         public void setRpps(String newrpps) { this.rpps = newrpps; }
         public void setPassword(String newpassword) { this.password = newpassword; }
-        public void setEmail(String newemail) { this.email = newemail; }
+        public void setEmail(String newemail) { this.Email = newemail; }
 
         // CONSTRUCTEURS
 
@@ -36,7 +39,7 @@ namespace GSB.Models
             : base(name, firstname, birthdate)
         {
 
-            this.email = email;
+            this.Email = email;
             this.rpps = rpps;
             this.password = password;
 

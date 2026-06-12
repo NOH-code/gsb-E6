@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,12 +19,25 @@ namespace GSB
         // Contrôleurs dédiés à ce formulaire
         private PatientController _patientController;
         private OrdonnanceController _ordonnanceController;
+        private AllergieController _allergieController;
+
+        // Cache de tous les patients (source de la recherche dans la combo)
+        private List<Patient> _tousLesPatients = new List<Patient>();
+
+        // Drapeau : empêche les handlers de réagir aux changements programmatiques
+        private bool _enChargement;
 
         public Recherche_patient()
         {
             InitializeComponent();
             _patientController = new PatientController();
             _ordonnanceController = new OrdonnanceController();
+            _allergieController = new AllergieController();
+
+            // La combo est éditable : on peut taper du texte pour filtrer les
+            // patients par nom ou prénom (voir comboBoxPatient_TextUpdate).
+            comboBoxPatient.DropDownStyle = ComboBoxStyle.DropDown;
+            comboBoxPatient.TextUpdate += comboBoxPatient_TextUpdate;
 
             // Câblage des événements non générés par le Designer
             this.Load += Recherche_patient_Load;
@@ -39,23 +53,80 @@ namespace GSB
         private void Recherche_patient_Load(object? sender, EventArgs e)
         {
             ChargerPatients();
+            ChargerAllergiesReferentiel();
         }
 
         /// <summary>
-        /// Remplit la liste déroulante avec tous les patients de la base.
+        /// Recharge tous les patients depuis la base et remplit la combo.
         /// </summary>
         private void ChargerPatients()
         {
             try
             {
-                List<Patient> patients = _patientController.ObtenirTousLesPatients();
-
-                comboBoxPatient.DataSource = patients;
-                comboBoxPatient.SelectedIndex = patients.Count > 0 ? 0 : -1;
+                _tousLesPatients = _patientController.ObtenirTousLesPatients();
+                RemplirCombo(_tousLesPatients);
             }
             catch (MySqlException ex)
             {
                 MessageBox.Show("Impossible de charger les patients :\n" + ex.Message,
+                    "Erreur base de données", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Remplit la combo avec une liste de patients (affichage via Presentation()).
+        /// </summary>
+        private void RemplirCombo(List<Patient> patients)
+        {
+            _enChargement = true;
+            comboBoxPatient.Items.Clear();
+            foreach (Patient p in patients)
+            {
+                comboBoxPatient.Items.Add(p);
+            }
+            _enChargement = false;
+        }
+
+        /// <summary>
+        /// Filtre la liste déroulante au fur et à mesure de la frappe :
+        /// on conserve les patients dont le nom OU le prénom contient le texte saisi.
+        /// </summary>
+        private void comboBoxPatient_TextUpdate(object? sender, EventArgs e)
+        {
+            string texte = comboBoxPatient.Text;
+
+            List<Patient> filtres = string.IsNullOrWhiteSpace(texte)
+                ? _tousLesPatients
+                : _tousLesPatients.Where(p =>
+                      (p.Name ?? "").Contains(texte, StringComparison.OrdinalIgnoreCase) ||
+                      (p.Firstname ?? "").Contains(texte, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            RemplirCombo(filtres);
+
+            // On restaure le texte tapé et on garde le curseur à la fin
+            comboBoxPatient.Text = texte;
+            comboBoxPatient.SelectionStart = texte.Length;
+            comboBoxPatient.SelectionLength = 0;
+            comboBoxPatient.DroppedDown = filtres.Count > 0;
+            Cursor.Current = Cursors.Default;
+        }
+
+        /// <summary>
+        /// Charge une fois pour toutes le référentiel d'allergies dans la liste à cocher.
+        /// </summary>
+        private void ChargerAllergiesReferentiel()
+        {
+            try
+            {
+                clbAllergies.Items.Clear();
+                foreach (Allergie a in _allergieController.ObtenirToutesLesAllergies())
+                {
+                    clbAllergies.Items.Add(a);
+                }
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show("Impossible de charger les allergies :\n" + ex.Message,
                     "Erreur base de données", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -70,20 +141,42 @@ namespace GSB
 
         /// <summary>
         /// Remplit la fiche avec les informations du patient sélectionné.
-        /// Taille, poids, sexe et pathologie ne sont pas stockés dans la table
-        /// PATIENT : ces champs restent libres pour la consultation.
         /// </summary>
         private void AfficherFichePatient(Patient patient)
         {
             textBoxName.Text = patient.Name;
             textBoxFirstname.Text = patient.Firstname;
             textBoxBirthdate.Text = patient.Birthdate.ToShortDateString();
+            textBoxSexe.Text = patient.SexeLibelle;
+            textBoxTaille.Text = patient.Taille.ToString(CultureInfo.CurrentCulture);
+            textBoxPoids.Text = patient.Poids.ToString(CultureInfo.CurrentCulture);
             textBoxNumSecu.Text = patient.NumeroSecu;
+            textBoxPathologie.Text = patient.Pathologie;
         }
 
         /// <summary>
-        /// Charge l'historique des ordonnances du patient sélectionné
-        /// dans la grille (motif maître-détail, chargement léger).
+        /// Coche dans la liste les allergies du patient sélectionné.
+        /// </summary>
+        private void AfficherAllergiesPatient(Patient patient)
+        {
+            try
+            {
+                List<int> codesPatient = _allergieController.ObtenirCodesAllergiesPatient(patient.Id);
+                for (int i = 0; i < clbAllergies.Items.Count; i++)
+                {
+                    Allergie a = (Allergie)clbAllergies.Items[i];
+                    clbAllergies.SetItemChecked(i, codesPatient.Contains(a.Id));
+                }
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show("Impossible de charger les allergies du patient :\n" + ex.Message,
+                    "Erreur base de données", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Charge l'historique des ordonnances du patient sélectionné dans la grille.
         /// </summary>
         private void ChargerOrdonnances(Patient patient)
         {
@@ -119,12 +212,18 @@ namespace GSB
 
         private void comboBoxPatient_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (_enChargement)
+            {
+                return;
+            }
+
             Patient? patient = PatientSelectionne();
             if (patient == null)
             {
                 return;
             }
             AfficherFichePatient(patient);
+            AfficherAllergiesPatient(patient);
             ChargerOrdonnances(patient);
         }
 
@@ -144,8 +243,8 @@ namespace GSB
         }
 
         /// <summary>
-        /// Bouton "Modifier" : enregistre les champs de la fiche
-        /// dans la base pour le patient sélectionné.
+        /// Bouton "Modifier" : enregistre la fiche complète (y compris poids,
+        /// taille, sexe, pathologie et allergies) pour le patient sélectionné.
         /// </summary>
         private void buttonModifierPatient_Click(object? sender, EventArgs e)
         {
@@ -186,10 +285,26 @@ namespace GSB
             patient.Firstname = prenom;
             patient.Birthdate = dateNaissance;
             patient.NumeroSecu = numeroSecu;
+            patient.Poids = ParseDouble(textBoxPoids.Text);
+            patient.Taille = ParseDouble(textBoxTaille.Text);
+            patient.Sexe = textBoxSexe.Text.Trim().StartsWith("H", StringComparison.OrdinalIgnoreCase);
+            patient.Pathologie = textBoxPathologie.Text.Trim();
 
             try
             {
                 _patientController.ModifierPatient(patient);
+
+                // Mise à jour des allergies cochées
+                List<int> codesAllergie = new List<int>();
+                foreach (object item in clbAllergies.CheckedItems)
+                {
+                    if (item is Allergie a)
+                    {
+                        codesAllergie.Add(a.Id);
+                    }
+                }
+                _allergieController.DefinirAllergiesPatient(patient.Id, codesAllergie);
+
                 MessageBox.Show("Patient modifié avec succès.", "Modification",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ChargerPatients();
@@ -267,19 +382,21 @@ namespace GSB
             }
         }
 
-        private void label5_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Convertit un texte en double en acceptant la virgule comme le point.
+        /// </summary>
+        private static double ParseDouble(string texte)
         {
-
-        }
-
-        private void label7_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label9_Click(object sender, EventArgs e)
-        {
-
+            texte = (texte ?? "").Trim();
+            if (double.TryParse(texte, NumberStyles.Any, CultureInfo.CurrentCulture, out double valeur))
+            {
+                return valeur;
+            }
+            if (double.TryParse(texte.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out valeur))
+            {
+                return valeur;
+            }
+            return 0;
         }
     }
 }

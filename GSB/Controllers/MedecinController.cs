@@ -14,7 +14,7 @@ namespace GSB.Ordonnances.Controllers
         public List<Doctor> ObtenirTousLesMedecins()
         {
             List<Doctor> medecins = new List<Doctor>();
-            string sql = "SELECT numMedecin, nom, prenom, dateNaissance, numeroRPPS, specialite " +
+            string sql = "SELECT numMedecin, nom, prenom, email, dateNaissance, numeroRPPS, specialite " +
                          "FROM MEDECIN " +
                          "ORDER BY nom, prenom";
 
@@ -25,7 +25,7 @@ namespace GSB.Ordonnances.Controllers
                 while (lecteur.Read())
                 {
                     Doctor m = new Doctor(
-                        "",                                  // email (absent de la table MEDECIN)
+                        lecteur.IsDBNull(lecteur.GetOrdinal("email")) ? "" : lecteur.GetString("email"),
                         lecteur.GetString("numeroRPPS"),
                         "",                                  // le hash ne sort jamais de l'authentification
                         lecteur.GetString("nom"),
@@ -46,8 +46,8 @@ namespace GSB.Ordonnances.Controllers
         /// </summary>
         public int AjouterMedecin(Doctor medecin)
         {
-            string sql = "INSERT INTO MEDECIN (nom, prenom, dateNaissance, numeroRPPS, specialite, motDePasse) " +
-                         "VALUES (@nom, @prenom, @dateNaissance, @numeroRPPS, @specialite, @motDePasse); " +
+            string sql = "INSERT INTO MEDECIN (nom, prenom, email, dateNaissance, numeroRPPS, specialite, motDePasse) " +
+                         "VALUES (@nom, @prenom, @email, @dateNaissance, @numeroRPPS, @specialite, @motDePasse); " +
                          "SELECT LAST_INSERT_ID();";
 
             using (MySqlConnection cnx = DbConnexion.Ouvrir())
@@ -55,6 +55,7 @@ namespace GSB.Ordonnances.Controllers
             {
                 cmd.Parameters.AddWithValue("@nom", medecin.Name);
                 cmd.Parameters.AddWithValue("@prenom", medecin.Firstname);
+                cmd.Parameters.AddWithValue("@email", string.IsNullOrEmpty(medecin.Email) ? (object)DBNull.Value : medecin.Email);
                 cmd.Parameters.AddWithValue("@dateNaissance", medecin.Birthdate);
                 cmd.Parameters.AddWithValue("@numeroRPPS", medecin.getRpps());
                 cmd.Parameters.AddWithValue("@specialite", medecin.Specialite);

@@ -152,7 +152,7 @@
             comboBox1.FormattingEnabled = true;
             comboBox1.Location = new Point(73, 108);
             comboBox1.Name = "comboBox1";
-            comboBox1.Size = new Size(154, 33);
+            comboBox1.Size = new Size(218, 33);
             comboBox1.TabIndex = 36;
             // 
             // comboBox2
@@ -160,7 +160,7 @@
             comboBox2.FormattingEnabled = true;
             comboBox2.Location = new Point(508, 110);
             comboBox2.Name = "comboBox2";
-            comboBox2.Size = new Size(53, 33);
+            comboBox2.Size = new Size(108, 33);
             comboBox2.TabIndex = 37;
             // 
             // comboBox3
@@ -168,7 +168,7 @@
             comboBox3.FormattingEnabled = true;
             comboBox3.Location = new Point(508, 238);
             comboBox3.Name = "comboBox3";
-            comboBox3.Size = new Size(53, 33);
+            comboBox3.Size = new Size(108, 33);
             comboBox3.TabIndex = 38;
             // 
             // comboBox4
@@ -176,7 +176,7 @@
             comboBox4.FormattingEnabled = true;
             comboBox4.Location = new Point(175, 237);
             comboBox4.Name = "comboBox4";
-            comboBox4.Size = new Size(52, 33);
+            comboBox4.Size = new Size(116, 33);
             comboBox4.TabIndex = 39;
             // 
             // label4
@@ -240,7 +240,8 @@
             Controls.Add(label1);
             Controls.Add(label8);
             Name = "Créateur_d_ordo";
-            Text = "Créateur_d_ordo";
+            StartPosition = FormStartPosition.CenterParent;
+            Text = "Nouvelle ordonnance";
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ((System.ComponentModel.ISupportInitialize)numericUpDown2).EndInit();
             ((System.ComponentModel.ISupportInitialize)numericUpDown1).EndInit();

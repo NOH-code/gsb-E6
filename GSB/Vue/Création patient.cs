@@ -15,34 +15,50 @@ namespace GSB
 {
     public partial class Création_patient : Form
     {
-        // Contrôleur patient dédié à ce formulaire
+        // Contrôleurs dédiés à ce formulaire
         private PatientController _patientController;
+        private AllergieController _allergieController;
 
         public Création_patient()
         {
             InitializeComponent();
             _patientController = new PatientController();
+            _allergieController = new AllergieController();
 
             // Valeurs proposées pour le sexe (la propriété Sexe du modèle est un bool)
             comboBox_sex.Items.Clear();
             comboBox_sex.Items.Add("Homme");
             comboBox_sex.Items.Add("Femme");
             comboBox_sex.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBox_sex.SelectedIndex = 0;
+
+            // Poids et taille acceptent une décimale (ex : 72,5 kg / 178,0 cm)
+            numericUpDown_poids.DecimalPlaces = 1;
+            numericUpDown_poids.Maximum = 400;
+            numericUpDown_taille.DecimalPlaces = 1;
+            numericUpDown_taille.Maximum = 280;
+
+            ChargerAllergies();
         }
 
-        private void textBox5_TextChanged(object sender, EventArgs e)
+        /// <summary>
+        /// Remplit la liste à cocher avec le référentiel des allergies.
+        /// </summary>
+        private void ChargerAllergies()
         {
-
-        }
-
-        private void numericUpDown2_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox3_TextChanged(object sender, EventArgs e)
-        {
-
+            try
+            {
+                clbAllergies.Items.Clear();
+                foreach (Allergie a in _allergieController.ObtenirToutesLesAllergies())
+                {
+                    clbAllergies.Items.Add(a); // affichage via Allergie.ToString()
+                }
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show("Impossible de charger les allergies :\n" + ex.Message,
+                    "Erreur base de données", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -73,11 +89,11 @@ namespace GSB
             }
 
             // Construction de l'objet métier complet (poids, taille, sexe et
-            // pathologie ne sont pas persistés : la table PATIENT ne les stocke pas).
+            // pathologie sont désormais persistés en base).
             Patient patient = new Patient(
                 (double)numericUpDown_poids.Value,
                 (double)numericUpDown_taille.Value,
-                comboBox_sex.SelectedIndex == 0,
+                comboBox_sex.SelectedIndex == 0,        // index 0 = Homme = true
                 textBox_pathologie.Text.Trim(),
                 numeroSecu,
                 nom,
@@ -88,6 +104,20 @@ namespace GSB
             try
             {
                 int id = _patientController.AjouterPatient(patient);
+
+                // Enregistrement des allergies cochées (table ETRE_ALLERGIQUE)
+                List<int> codesAllergie = new List<int>();
+                foreach (object item in clbAllergies.CheckedItems)
+                {
+                    if (item is Allergie a)
+                    {
+                        codesAllergie.Add(a.Id);
+                    }
+                }
+                if (codesAllergie.Count > 0)
+                {
+                    _allergieController.DefinirAllergiesPatient(id, codesAllergie);
+                }
 
                 MessageBox.Show($"Patient {patient.Presentation()} créé avec le numéro {id}.",
                     "Patient créé", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -107,11 +137,6 @@ namespace GSB
                 MessageBox.Show("Erreur lors de l'enregistrement :\n" + ex.Message,
                     "Erreur base de données", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private void dateTimePicker_ddn_ValueChanged(object sender, EventArgs e)
-        {
-
         }
     }
 }

@@ -8,31 +8,34 @@ namespace GSB.Ordonnances.Controllers
     public class AuthController
     {
         /// <summary>
-        /// Authentifie un médecin par son numéro RPPS et son mot de passe en clair.
-        /// On récupère le médecin et son hash par RPPS (jamais de mot de passe
-        /// dans la clause WHERE), puis on vérifie le mot de passe côté C#.
+        /// Authentifie un médecin par son identifiant (numéro RPPS OU email)
+        /// et son mot de passe en clair. On récupère le médecin et son hash
+        /// par identifiant (jamais de mot de passe dans la clause WHERE),
+        /// puis on vérifie le mot de passe côté C#.
         /// Retourne le médecin si OK, null sinon.
         /// </summary>
-        public Doctor? Authentifier(string numeroRPPS, string motDePasseClair)
+        public Doctor? Authentifier(string identifiant, string motDePasseClair)
         {
             Doctor? medecin = null;
             string? hashStocke = null;
 
-            string sql = "SELECT numMedecin, nom, prenom, dateNaissance, numeroRPPS, specialite, motDePasse " +
+            // L'identifiant peut être le numéro RPPS ou l'adresse email :
+            // les deux sont uniques et passent par un paramètre (anti-injection).
+            string sql = "SELECT numMedecin, nom, prenom, email, dateNaissance, numeroRPPS, specialite, motDePasse " +
                          "FROM MEDECIN " +
-                         "WHERE numeroRPPS = @rpps";
+                         "WHERE numeroRPPS = @identifiant OR email = @identifiant";
 
             using (MySqlConnection cnx = DbConnexion.Ouvrir())
             using (MySqlCommand cmd = new MySqlCommand(sql, cnx))
             {
-                cmd.Parameters.AddWithValue("@rpps", numeroRPPS);
+                cmd.Parameters.AddWithValue("@identifiant", identifiant);
 
                 using (MySqlDataReader lecteur = cmd.ExecuteReader())
                 {
                     if (lecteur.Read())
                     {
                         medecin = new Doctor(
-                            "",                                  // email (absent de la table MEDECIN)
+                            lecteur.IsDBNull(lecteur.GetOrdinal("email")) ? "" : lecteur.GetString("email"),
                             lecteur.GetString("numeroRPPS"),
                             lecteur.GetString("motDePasse"),
                             lecteur.GetString("nom"),

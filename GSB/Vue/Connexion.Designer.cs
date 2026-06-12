@@ -54,13 +54,13 @@
             label1.Name = "label1";
             label1.Size = new Size(92, 25);
             label1.TabIndex = 1;
-            label1.Text = "Identifiant";
+            label1.Text = "Identifiant (RPPS ou email)";
             // 
             // textBox_id
             // 
-            textBox_id.Location = new Point(207, 72);
+            textBox_id.Location = new Point(210, 72);
             textBox_id.Name = "textBox_id";
-            textBox_id.Size = new Size(150, 31);
+            textBox_id.Size = new Size(368, 31);
             textBox_id.TabIndex = 2;
             textBox_id.TextChanged += textBox1_TextChanged;
             // 
@@ -73,9 +73,9 @@
             // 
             // textBox_mdp
             // 
-            textBox_mdp.Location = new Point(207, 175);
+            textBox_mdp.Location = new Point(210, 175);
             textBox_mdp.Name = "textBox_mdp";
-            textBox_mdp.Size = new Size(241, 31);
+            textBox_mdp.Size = new Size(368, 31);
             textBox_mdp.TabIndex = 4;
             textBox_mdp.UseSystemPasswordChar = true;
             // 
@@ -111,6 +111,9 @@
             Controls.Add(textBox_id);
             Controls.Add(label1);
             Controls.Add(button_login);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            StartPosition = FormStartPosition.CenterScreen;
             Name = "Connexion";
             Text = "Se connecter";
             ResumeLayout(false);
