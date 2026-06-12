@@ -39,5 +39,23 @@ namespace GSB.Models
             this.Pathologie = pathologie;
             this.NumeroSecu = numeroSecu;
         }
+
+        // MÉTHODES
+
+        /// <summary>
+        /// true à partir de 18 ans (réutilise CalculerAge de Person).
+        /// </summary>
+        public bool EstMajeur()
+        {
+            return CalculerAge() >= 18;
+        }
+
+        /// <summary>
+        /// Présentation adaptée au patient : "Prenom NOM".
+        /// </summary>
+        public override string Presentation()
+        {
+            return $"{Firstname} {Name?.ToUpper()}";
+        }
     }
 }

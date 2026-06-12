@@ -42,6 +42,10 @@
             textBox_rpps = new TextBox();
             textBox_prénom = new TextBox();
             textBox_nom = new TextBox();
+            label7 = new Label();
+            dateTimePicker_ddn = new DateTimePicker();
+            label8 = new Label();
+            textBox_specialite = new TextBox();
             SuspendLayout();
             // 
             // label1
@@ -97,10 +101,43 @@
             label6.Size = new Size(222, 25);
             label6.TabIndex = 7;
             label6.Text = "Confirmer le mot de passe";
-            // 
+            //
+            // label7
+            //
+            label7.AutoSize = true;
+            label7.Location = new Point(107, 397);
+            label7.Name = "label7";
+            label7.Size = new Size(154, 25);
+            label7.TabIndex = 24;
+            label7.Text = "Date de naissance";
+            //
+            // dateTimePicker_ddn
+            //
+            dateTimePicker_ddn.Format = DateTimePickerFormat.Short;
+            dateTimePicker_ddn.Location = new Point(107, 425);
+            dateTimePicker_ddn.Name = "dateTimePicker_ddn";
+            dateTimePicker_ddn.Size = new Size(222, 31);
+            dateTimePicker_ddn.TabIndex = 25;
+            //
+            // label8
+            //
+            label8.AutoSize = true;
+            label8.Location = new Point(359, 397);
+            label8.Name = "label8";
+            label8.Size = new Size(94, 25);
+            label8.TabIndex = 26;
+            label8.Text = "Spécialité";
+            //
+            // textBox_specialite
+            //
+            textBox_specialite.Location = new Point(359, 425);
+            textBox_specialite.Name = "textBox_specialite";
+            textBox_specialite.Size = new Size(261, 31);
+            textBox_specialite.TabIndex = 27;
+            //
             // button1
-            // 
-            button1.Location = new Point(176, 435);
+            //
+            button1.Location = new Point(176, 490);
             button1.Name = "button1";
             button1.Size = new Size(368, 63);
             button1.TabIndex = 8;
@@ -110,7 +147,7 @@
             // 
             // button2
             // 
-            button2.Location = new Point(176, 522);
+            button2.Location = new Point(176, 577);
             button2.Name = "button2";
             button2.Size = new Size(368, 44);
             button2.TabIndex = 9;
@@ -124,6 +161,7 @@
             textBox_mdp.Name = "textBox_mdp";
             textBox_mdp.Size = new Size(513, 31);
             textBox_mdp.TabIndex = 18;
+            textBox_mdp.UseSystemPasswordChar = true;
             // 
             // textBox_mdp2
             // 
@@ -131,6 +169,7 @@
             textBox_mdp2.Name = "textBox_mdp2";
             textBox_mdp2.Size = new Size(514, 31);
             textBox_mdp2.TabIndex = 19;
+            textBox_mdp2.UseSystemPasswordChar = true;
             // 
             // textBox_mail
             // 
@@ -164,7 +203,11 @@
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(703, 610);
+            ClientSize = new Size(703, 660);
+            Controls.Add(textBox_specialite);
+            Controls.Add(label8);
+            Controls.Add(dateTimePicker_ddn);
+            Controls.Add(label7);
             Controls.Add(textBox_nom);
             Controls.Add(textBox_prénom);
             Controls.Add(textBox_rpps);
@@ -201,5 +244,9 @@
         private TextBox textBox_rpps;
         private TextBox textBox_prénom;
         private TextBox textBox_nom;
+        private Label label7;
+        private DateTimePicker dateTimePicker_ddn;
+        private Label label8;
+        private TextBox textBox_specialite;
     }
 }

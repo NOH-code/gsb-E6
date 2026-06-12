@@ -1,4 +1,4 @@
-﻿using GSB.Models;
+using GSB.Models;
 using GSB.Ordonnances.Controllers;
 using GSB.Ordonnances;
 using MySql.Data.MySqlClient;
@@ -9,12 +9,13 @@ namespace GSB.Vue
 {
     public partial class PatientListForm : Form
     {
-        // Un contrôleur dédié à ce formulaire
-        private PatientController _controller;
+        // Un contrôleur dédié à ce formulaire (préfixé _patient... car
+        // d'autres contrôleurs peuvent arriver sur cette vue)
+        private PatientController _patientController;
         public PatientListForm()
         {
             InitializeComponent();
-            _controller = new PatientController();
+            _patientController = new PatientController();
         }
         private void PatientListForm_Load(object sender, EventArgs e)
         {
@@ -24,46 +25,8 @@ namespace GSB.Vue
         {
             try
             {
-                List<Patient> patients = _controller.ObtenirTousLesPatients();
-
-                // Optimisation des performances UI : suspend le redessin pendant la modification
-                dgvPatients.SuspendLayout();
-
-                // 1. Nettoyage absolu : supprime toute colonne créée par erreur dans le Designer
-                dgvPatients.Columns.Clear();
-                dgvPatients.Rows.Clear();
-
-                // 2. Création des 5 (et uniques) colonnes présentes dans la table SQL
-                dgvPatients.Columns.Add("Id", "N°");
-                dgvPatients.Columns.Add("Nom", "Nom");
-                dgvPatients.Columns.Add("Prenom", "Prénom");
-                dgvPatients.Columns.Add("DateNaissance", "Date de naissance");
-                dgvPatients.Columns.Add("NumeroSecu", "N° Sécurité sociale");
-
-                // 3. Redimensionnement spécifique
-                dgvPatients.Columns["Id"].Width = 50;
-
-                // 4. Remplissage des données
-                foreach (Patient p in patients)
-                {
-
-                    dgvPatients.Rows.Add(
-                        p.Id,
-                        p.Name,
-                        p.Firstname,
-                        p.Birthdate,
-                        p.NumeroSecu
-                    );
-                }
-
-                // 5. Paramètres visuels globaux
-                dgvPatients.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-                dgvPatients.ReadOnly = true;
-                dgvPatients.AllowUserToAddRows = false;
-                dgvPatients.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-
-                // Restaure le redessin de l'interface graphique
-                dgvPatients.ResumeLayout();
+                List<Patient> patients = _patientController.ObtenirTousLesPatients();
+                AfficherPatients(patients);
             }
             catch (MySqlException ex)
             {
@@ -74,15 +37,61 @@ namespace GSB.Vue
             }
         }
 
+        /// <summary>
+        /// Affiche une liste de patients dans la grille (utilisé par le
+        /// chargement initial, la recherche et le reset).
+        /// </summary>
+        private void AfficherPatients(List<Patient> patients)
+        {
+            // Optimisation des performances UI : suspend le redessin pendant la modification
+            dgvPatients.SuspendLayout();
+
+            // 1. Nettoyage absolu : supprime toute colonne créée par erreur dans le Designer
+            dgvPatients.Columns.Clear();
+            dgvPatients.Rows.Clear();
+
+            // 2. Création des 5 (et uniques) colonnes présentes dans la table SQL
+            dgvPatients.Columns.Add("Id", "N°");
+            dgvPatients.Columns.Add("Nom", "Nom");
+            dgvPatients.Columns.Add("Prenom", "Prénom");
+            dgvPatients.Columns.Add("DateNaissance", "Date de naissance");
+            dgvPatients.Columns.Add("NumeroSecu", "N° Sécurité sociale");
+
+            // 3. Redimensionnement spécifique
+            dgvPatients.Columns["Id"].Width = 50;
+
+            // 4. Remplissage des données
+            foreach (Patient p in patients)
+            {
+
+                dgvPatients.Rows.Add(
+                    p.Id,
+                    p.Name,
+                    p.Firstname,
+                    p.Birthdate.ToShortDateString(),
+                    p.NumeroSecu
+                );
+            }
+
+            // 5. Paramètres visuels globaux
+            dgvPatients.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            dgvPatients.ReadOnly = true;
+            dgvPatients.AllowUserToAddRows = false;
+            dgvPatients.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+
+            // Restaure le redessin de l'interface graphique
+            dgvPatients.ResumeLayout();
+        }
+
         private void btnRechercher_Click(object sender, EventArgs e)
         {
-            string motCle = txtRecherche.Text;
+            string motCle = txtRecherche.Text.Trim();
             try
             {
-                // Pour l'instant : version vulnérable
-                List<Patient> patients = RechercherParNom_Vulnerable(motCle);
-                dgvPatients.DataSource = patients;
-                Console.WriteLine($"FLAG-A1-{patients.Count * 17 + 3}");
+                // Version sécurisée : la saisie passe par un paramètre @motCle,
+                // jamais par concaténation (protection contre l'injection SQL).
+                List<Patient> patients = _patientController.ObtenirPatientsParNom(motCle);
+                AfficherPatients(patients);
             }
             catch (MySqlException ex)
             {
@@ -96,8 +105,7 @@ namespace GSB.Vue
         private void btnReset_Click(object sender, EventArgs e)
         {
             txtRecherche.Text = "";
-            ChargerPatients(); // ta méthode existante qui appelle
-            _controller.ObtenirTousLesPatients();
+            ChargerPatients();
         }
 
         private void dgvPatients_CellContentClick(object sender, DataGridViewCellEventArgs e)

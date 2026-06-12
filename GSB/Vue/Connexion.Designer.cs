@@ -77,6 +77,7 @@
             textBox_mdp.Name = "textBox_mdp";
             textBox_mdp.Size = new Size(241, 31);
             textBox_mdp.TabIndex = 4;
+            textBox_mdp.UseSystemPasswordChar = true;
             // 
             // button_signup
             // 

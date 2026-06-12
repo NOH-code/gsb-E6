@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +8,12 @@ namespace GSB.Models
 {
     public class Doctor : Person
     {
-        
+        // Identifiant, mappé sur la colonne SQL numMedecin
+        public int Id { get; set; }
+
+        // Spécialité du médecin (colonne SQL specialite)
+        public string Specialite { get; set; } = "";
+
         private String email;
         private String rpps;
         private String password;
@@ -23,7 +28,9 @@ namespace GSB.Models
         public void setPassword(String newpassword) { this.password = newpassword; }
         public void setEmail(String newemail) { this.email = newemail; }
 
-        // CONSTRUCTEUR
+        // CONSTRUCTEURS
+
+        public Doctor() : base() { }
 
         public Doctor(string email, String rpps, String password, string name, string firstname, DateTime birthdate)
             : base(name, firstname, birthdate)
@@ -32,8 +39,20 @@ namespace GSB.Models
             this.email = email;
             this.rpps = rpps;
             this.password = password;
-           
-        
+
+
+        }
+
+        // MÉTHODES
+
+        /// <summary>
+        /// Présentation adaptée au médecin : "Dr NOM, Specialite".
+        /// </summary>
+        public override string Presentation()
+        {
+            return string.IsNullOrEmpty(Specialite)
+                ? $"Dr {Name?.ToUpper()}"
+                : $"Dr {Name?.ToUpper()}, {Specialite}";
         }
     }
 }
