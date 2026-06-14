@@ -51,6 +51,7 @@ namespace GSB
             textBoxPathologie = new TextBox();
             clbAllergies = new CheckedListBox();
             buttonModifierPatient = new Button();
+            buttonSupprimerPatient = new Button();
             dataGridView1 = new DataGridView();
             button3 = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
@@ -240,6 +241,18 @@ namespace GSB
             buttonModifierPatient.Text = "Modifier";
             buttonModifierPatient.UseVisualStyleBackColor = true;
             //
+            // buttonSupprimerPatient
+            //
+            buttonSupprimerPatient.Location = new Point(300, 530);
+            buttonSupprimerPatient.Name = "buttonSupprimerPatient";
+            buttonSupprimerPatient.Size = new Size(230, 50);
+            buttonSupprimerPatient.TabIndex = 22;
+            buttonSupprimerPatient.Text = "Supprimer";
+            buttonSupprimerPatient.UseVisualStyleBackColor = false;
+            buttonSupprimerPatient.BackColor = Color.FromArgb(220, 53, 69);
+            buttonSupprimerPatient.ForeColor = Color.White;
+            buttonSupprimerPatient.FlatStyle = FlatStyle.Flat;
+            //
             // label10
             //
             label10.AutoSize = true;
@@ -277,6 +290,7 @@ namespace GSB
             Controls.Add(button3);
             Controls.Add(label10);
             Controls.Add(dataGridView1);
+            Controls.Add(buttonSupprimerPatient);
             Controls.Add(buttonModifierPatient);
             Controls.Add(clbAllergies);
             Controls.Add(labelAllergies);
@@ -332,6 +346,7 @@ namespace GSB
         private TextBox textBoxPathologie;
         private CheckedListBox clbAllergies;
         private Button buttonModifierPatient;
+        private Button buttonSupprimerPatient;
         private DataGridView dataGridView1;
         private Button button3;
     }

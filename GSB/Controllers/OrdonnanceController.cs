@@ -67,6 +67,22 @@ namespace GSB.Ordonnances.Controllers
         }
 
         /// <summary>
+        /// Supprime une ordonnance par son numero. Les lignes de CONTENIR sont
+        /// supprimees automatiquement (ON DELETE CASCADE sur la FK ordonnance).
+        /// </summary>
+        public void SupprimerOrdonnance(int numOrdonnance)
+        {
+            string sql = "DELETE FROM ORDONNANCE WHERE numOrdonnance = @id";
+
+            using (MySqlConnection cnx = DbConnexion.Ouvrir())
+            using (MySqlCommand cmd = new MySqlCommand(sql, cnx))
+            {
+                cmd.Parameters.AddWithValue("@id", numOrdonnance);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        /// <summary>
         /// Recupere les ordonnances d'un patient (chargement leger, sans les lignes),
         /// avec le nom du medecin prescripteur, triees de la plus recente a la plus ancienne.
         /// </summary>

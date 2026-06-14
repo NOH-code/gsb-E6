@@ -42,6 +42,7 @@ namespace GSB
             // Câblage des événements non générés par le Designer
             this.Load += Recherche_patient_Load;
             buttonModifierPatient.Click += buttonModifierPatient_Click;
+            buttonSupprimerPatient.Click += buttonSupprimerPatient_Click;
             dataGridView1.CellDoubleClick += dataGridView1_CellDoubleClick;
 
             // La grille d'historique est en lecture seule : on n'édite pas dans les cellules
@@ -322,6 +323,77 @@ namespace GSB
         }
 
         /// <summary>
+        /// Bouton "Supprimer" : supprime le patient sélectionné après confirmation.
+        /// Si le patient a des ordonnances, MySQL refuse (ON DELETE RESTRICT,
+        /// erreur 1451) : on l'explique à l'utilisateur.
+        /// </summary>
+        private void buttonSupprimerPatient_Click(object? sender, EventArgs e)
+        {
+            Patient? patient = PatientSelectionne();
+            if (patient == null)
+            {
+                MessageBox.Show("Sélectionnez d'abord un patient.", "Aucun patient",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            DialogResult confirmation = MessageBox.Show(
+                $"Voulez-vous vraiment supprimer le patient {patient.Presentation()} ?\n" +
+                "Cette action est définitive.",
+                "Confirmer la suppression",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            if (confirmation != DialogResult.Yes)
+            {
+                return;
+            }
+
+            try
+            {
+                _patientController.SupprimerPatient(patient.Id);
+                MessageBox.Show("Patient supprimé.", "Suppression",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                ViderFiche();
+                ChargerPatients();
+            }
+            catch (MySqlException ex) when (ex.Number == 1451)
+            {
+                // Violation de la contrainte FK : le patient a des ordonnances
+                MessageBox.Show(
+                    "Ce patient a des ordonnances : supprimez-les d'abord (double-clic sur une " +
+                    "ordonnance de l'historique, puis « Supprimer l'ordonnance »).",
+                    "Suppression impossible", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show("Erreur lors de la suppression :\n" + ex.Message,
+                    "Erreur base de données", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Vide la fiche, les allergies et l'historique (après une suppression).
+        /// </summary>
+        private void ViderFiche()
+        {
+            comboBoxPatient.SelectedIndex = -1;
+            comboBoxPatient.Text = "";
+            textBoxName.Clear();
+            textBoxFirstname.Clear();
+            textBoxBirthdate.Clear();
+            textBoxSexe.Clear();
+            textBoxTaille.Clear();
+            textBoxPoids.Clear();
+            textBoxNumSecu.Clear();
+            textBoxPathologie.Clear();
+            for (int i = 0; i < clbAllergies.Items.Count; i++)
+            {
+                clbAllergies.SetItemChecked(i, false);
+            }
+            dataGridView1.Rows.Clear();
+        }
+
+        /// <summary>
         /// Bouton "+" de l'historique : nouvelle ordonnance pour le patient
         /// sélectionné (fenêtre modale). Rafraîchit l'historique au retour.
         /// </summary>
@@ -345,7 +417,9 @@ namespace GSB
         }
 
         /// <summary>
-        /// Double-clic sur une ordonnance : affiche son détail (lignes de prescription).
+        /// Double-clic sur une ordonnance : ouvre son détail (lignes de
+        /// prescription) avec la possibilité de la supprimer. Si elle est
+        /// supprimée, l'historique du patient est rafraîchi.
         /// </summary>
         private void dataGridView1_CellDoubleClick(object? sender, DataGridViewCellEventArgs e)
         {
@@ -365,15 +439,18 @@ namespace GSB
                 int numOrdonnance = Convert.ToInt32(valeurId);
                 List<Prescription> lignes = _ordonnanceController.ObtenirLignesOrdonnance(numOrdonnance);
 
-                StringBuilder detail = new StringBuilder();
-                detail.AppendLine($"Ordonnance n°{numOrdonnance}\n");
-                foreach (Prescription ligne in lignes)
+                using (OrdonnanceDetailForm detail = new OrdonnanceDetailForm(numOrdonnance, lignes))
                 {
-                    detail.AppendLine($"• {ligne.getMedicament().Presentation()} — {ligne.getName()} — {ligne.getDurée()} jour(s)");
+                    // DialogResult.OK = l'ordonnance a été supprimée depuis le détail
+                    if (detail.ShowDialog(this) == DialogResult.OK)
+                    {
+                        Patient? patient = PatientSelectionne();
+                        if (patient != null)
+                        {
+                            ChargerOrdonnances(patient);
+                        }
+                    }
                 }
-
-                MessageBox.Show(detail.ToString(), "Détail de l'ordonnance",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (MySqlException ex)
             {
