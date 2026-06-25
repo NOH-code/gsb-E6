@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : mysql:3306
--- Généré le : dim. 14 juin 2026 à 18:45
+-- Généré le : jeu. 25 juin 2026 à 07:57
 -- Version du serveur : 8.0.46
 -- Version de PHP : 8.3.27
 
@@ -20,6 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Base de données : `gsb_ordonnances`
 --
+CREATE DATABASE IF NOT EXISTS `gsb_ordonnances` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+USE `gsb_ordonnances`;
 
 -- --------------------------------------------------------
 
@@ -27,6 +29,7 @@ SET time_zone = "+00:00";
 -- Structure de la table `ALLERGIE`
 --
 
+DROP TABLE IF EXISTS `ALLERGIE`;
 CREATE TABLE `ALLERGIE` (
   `codeAllergie` int NOT NULL,
   `libelle` varchar(100) NOT NULL
@@ -47,6 +50,7 @@ INSERT INTO `ALLERGIE` (`codeAllergie`, `libelle`) VALUES
 -- Structure de la table `CONTENIR`
 --
 
+DROP TABLE IF EXISTS `CONTENIR`;
 CREATE TABLE `CONTENIR` (
   `numOrdonnance` int NOT NULL,
   `codeMedicament` int NOT NULL,
@@ -63,7 +67,15 @@ INSERT INTO `CONTENIR` (`numOrdonnance`, `codeMedicament`, `posologie`, `dureeJo
 (1, 2, '1 comprimÃ© matin et soir', 7),
 (2, 3, '5 X 3 cas', 10),
 (4, 1, '1 mg, 1 fois /jour', 1),
-(5, 2, '1 mg, 1 fois /jour', 1);
+(5, 2, '1 mg, 1 fois /jour', 1),
+(7, 1, '5 mg, 5 fois /jour', 1),
+(7, 2, '1 mg, 1 fois /jour', 1),
+(7, 3, '1 mg, 1 fois /jour', 1),
+(8, 3, '100 mg, 2 fois /jour', 4),
+(10, 1, '10 g, 3 fois /sem.', 49),
+(10, 3, '9 g, 3 fois /sem.', 21),
+(12, 1, '1 mg, 1 fois /jour', 1),
+(12, 3, '1 mg, 1 fois /jour', 1);
 
 -- --------------------------------------------------------
 
@@ -71,6 +83,7 @@ INSERT INTO `CONTENIR` (`numOrdonnance`, `codeMedicament`, `posologie`, `dureeJo
 -- Structure de la table `ETRE_ALLERGIQUE`
 --
 
+DROP TABLE IF EXISTS `ETRE_ALLERGIQUE`;
 CREATE TABLE `ETRE_ALLERGIQUE` (
   `numPatient` int NOT NULL,
   `codeAllergie` int NOT NULL
@@ -83,6 +96,7 @@ CREATE TABLE `ETRE_ALLERGIQUE` (
 INSERT INTO `ETRE_ALLERGIQUE` (`numPatient`, `codeAllergie`) VALUES
 (1, 1),
 (3, 1),
+(4, 1),
 (8, 1),
 (15, 1),
 (24, 1),
@@ -101,6 +115,7 @@ INSERT INTO `ETRE_ALLERGIQUE` (`numPatient`, `codeAllergie`) VALUES
 -- Structure de la table `MEDECIN`
 --
 
+DROP TABLE IF EXISTS `MEDECIN`;
 CREATE TABLE `MEDECIN` (
   `numMedecin` int NOT NULL,
   `nom` varchar(50) NOT NULL,
@@ -132,6 +147,7 @@ INSERT INTO `MEDECIN` (`numMedecin`, `nom`, `prenom`, `email`, `dateNaissance`, 
 -- Structure de la table `MEDICAMENT`
 --
 
+DROP TABLE IF EXISTS `MEDICAMENT`;
 CREATE TABLE `MEDICAMENT` (
   `codeMedicament` int NOT NULL,
   `nom` varchar(100) NOT NULL,
@@ -153,6 +169,7 @@ INSERT INTO `MEDICAMENT` (`codeMedicament`, `nom`, `dosage`) VALUES
 -- Structure de la table `ORDONNANCE`
 --
 
+DROP TABLE IF EXISTS `ORDONNANCE`;
 CREATE TABLE `ORDONNANCE` (
   `numOrdonnance` int NOT NULL,
   `dateEmission` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -168,7 +185,11 @@ INSERT INTO `ORDONNANCE` (`numOrdonnance`, `dateEmission`, `numMedecin`, `numPat
 (1, '2026-05-11 10:30:00', 1, 1),
 (2, '2026-06-11 11:16:25', 1, 4),
 (4, '2026-06-12 09:49:43', 2, 4),
-(5, '2026-06-12 12:10:27', 4, 24);
+(5, '2026-06-12 12:10:27', 4, 24),
+(7, '2026-06-19 13:55:51', 4, 4),
+(8, '2026-06-19 14:42:07', 4, 24),
+(10, '2026-06-19 14:44:36', 4, 24),
+(12, '2026-06-19 15:52:02', 4, 6);
 
 -- --------------------------------------------------------
 
@@ -176,6 +197,7 @@ INSERT INTO `ORDONNANCE` (`numOrdonnance`, `dateEmission`, `numMedecin`, `numPat
 -- Structure de la table `PATIENT`
 --
 
+DROP TABLE IF EXISTS `PATIENT`;
 CREATE TABLE `PATIENT` (
   `numPatient` int NOT NULL,
   `nom` varchar(50) NOT NULL,
@@ -196,7 +218,7 @@ INSERT INTO `PATIENT` (`numPatient`, `nom`, `prenom`, `dateNaissance`, `numeroSe
 (1, 'DUPONT', 'Marie', '1985-03-14', '2850314123456', 62.00, 165.00, 0, 'Hypertension'),
 (2, 'LEROY', 'Jean', '1960-07-22', '1600722123456', 81.50, 178.00, 1, 'Diabète type 2'),
 (3, 'Dupont', 'Lucas', '1998-03-12', '1980323456701', 75.00, 180.00, 1, 'Asthme'),
-(4, 'Dupont', 'Emmy', '2001-11-25', '2011123456702', 0.00, 0.00, 0, ''),
+(4, 'Dupont', 'Emmy', '2001-11-25', '2011123456702', 62.00, 1.64, 0, ''),
 (5, 'Martin', 'Hugo', '1987-07-04', '1870723456703', 88.00, 182.00, 1, 'Aucune'),
 (6, 'Bernard', 'Chloé', '1995-01-19', '1950123456704', 60.50, 170.00, 0, 'Allergie saisonnière'),
 (7, 'Petit', 'Louis', '1979-09-30', '1790923456705', 79.00, 176.00, 1, 'Cholestérol'),
@@ -215,7 +237,7 @@ INSERT INTO `PATIENT` (`numPatient`, `nom`, `prenom`, `dateNaissance`, `numeroSe
 (20, 'Renard', 'Anaïs', '1997-08-21', '1970823456718', 60.00, 171.00, 0, 'Migraine'),
 (21, 'Collet', 'Thomas', '1983-06-02', '1830623456719', 85.00, 184.00, 1, 'Hypertension'),
 (22, 'Perrot', 'Elise', '2002-11-17', '2021123456720', 54.00, 160.00, 0, 'Anémie'),
-(24, 'LEJUIF', 'Josselyn', '1992-11-26', '1921169666666', 666.00, 12.00, 1, 'Complexe de Dieu');
+(24, 'LEJUIF', 'Josselyn', '1992-11-26', '1921164758925', 76.00, 12.00, 1, 'CdD');
 
 --
 -- Index pour les tables déchargées
@@ -285,7 +307,7 @@ ALTER TABLE `ALLERGIE`
 -- AUTO_INCREMENT pour la table `MEDECIN`
 --
 ALTER TABLE `MEDECIN`
-  MODIFY `numMedecin` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `numMedecin` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT pour la table `MEDICAMENT`
@@ -297,7 +319,7 @@ ALTER TABLE `MEDICAMENT`
 -- AUTO_INCREMENT pour la table `ORDONNANCE`
 --
 ALTER TABLE `ORDONNANCE`
-  MODIFY `numOrdonnance` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `numOrdonnance` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT pour la table `PATIENT`

@@ -475,5 +475,10 @@ namespace GSB
             }
             return 0;
         }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
     }
 }
