@@ -22,6 +22,7 @@ le présenter (oral E6 / écrit E7 du BTS SIO SLAM).
 9. [Sécurité](#9-sécurité)
 10. [Les trois patterns d'accès aux données à retenir](#10-les-trois-patterns-daccès-aux-données-à-retenir)
 11. [La base de données](#11-la-base-de-données)
+12. [Manuel d'utilisation (captures d'écran)](#12-manuel-dutilisation-captures-décran)
 
 ---
 
@@ -601,6 +602,112 @@ ETRE_ALLERGIQUE (numPatient+codeAllergie PK)                        ← allergie
 
 > **À retenir** : la règle de mapping `Id` (C#) ↔ `numXxx`/`codeXxx` (SQL) est appliquée
 > dans le **contrôleur**, jamais dans la vue.
+
+---
+
+## 12. Manuel d'utilisation (captures d'écran)
+
+Cette section illustre **chaque écran de l'application** dans l'ordre logique du parcours
+utilisateur, avec le rôle de **chaque bouton et fonctionnalité majeure**. Les mêmes
+explications, annotées de flèches sur les captures, sont disponibles dans le fichier
+**`notice.pdf`** à la racine du projet.
+
+### 12.1 Écran d'inscription (S'inscrire)
+
+![Écran d'inscription](images_docs/01_inscription.png)
+
+Premier écran permettant à un **médecin de créer son compte**.
+
+| Élément | Rôle |
+|---|---|
+| **Nom / Prénom** | Identité du médecin qui crée son compte. |
+| **Numéro RPPS** | Identifiant national unique du professionnel de santé. |
+| **Email** | Adresse de contact, utilisable aussi comme identifiant de connexion. |
+| **Mot de passe + Confirmation** | Saisi deux fois ; haché en **bcrypt** avant stockage. |
+| **Date de naissance & Spécialité** | Informations de profil du médecin (ex. *Psychologue*). |
+| **Bouton « S'inscrire »** | Valide le formulaire et crée le compte en base de données. |
+| **Bouton « Se connecter »** | Renvoie vers l'écran de connexion si le médecin est déjà inscrit. |
+
+### 12.2 Confirmation d'inscription
+
+![Confirmation d'inscription](images_docs/02_confirmation_inscription.png)
+
+| Élément | Rôle |
+|---|---|
+| **Message « Inscription réussie »** | Récapitule le Nom, Prénom, RPPS et la Spécialité enregistrés. |
+| **Bouton « OK »** | Ferme la fenêtre et bascule vers l'écran de connexion. |
+
+### 12.3 Écran de connexion (Se connecter)
+
+![Écran de connexion](images_docs/03_connexion.png)
+
+| Élément | Rôle |
+|---|---|
+| **Identifiant (RPPS ou email)** | Le médecin se connecte avec son **numéro RPPS OU son email**. |
+| **Mot de passe** | Vérifié contre le hash **bcrypt** stocké en base. |
+| **Bouton « Se connecter »** | Ouvre l'écran principal si les identifiants sont valides. |
+| **Bouton « Créer un compte »** | Ouvre l'écran d'inscription pour un nouveau médecin. |
+
+### 12.4 Écran principal — Recherche de patient
+
+![Recherche de patient](images_docs/04_recherche_patient.png)
+
+Écran central de l'application : fiche patient, allergies et historique des ordonnances.
+
+| Élément | Rôle |
+|---|---|
+| **Sélecteur de patient** | Liste déroulante pour rechercher / choisir un patient. |
+| **Bouton « + » (patient)** | Ouvre la fenêtre de création d'un nouveau patient. |
+| **Fiche patient** | Nom, prénom, date de naissance, sexe, taille, poids, n° de sécurité sociale, pathologie. |
+| **Liste des allergies** | Cases à cocher (Aspirine, Iode, Pénicilline…) liées au patient. |
+| **Bouton « Modifier »** | Enregistre les changements apportés à la fiche patient. |
+| **Bouton « Supprimer »** | Supprime le patient sélectionné (action destructive, en rouge). |
+| **Bouton « + » (ordonnance)** | Crée une nouvelle ordonnance pour ce patient. |
+| **Historique des ordonnances** | Tableau des ordonnances ; un **double-clic** ouvre le détail. |
+
+### 12.5 Création d'un nouveau patient
+
+![Nouveau patient](images_docs/05_nouveau_patient.png)
+
+Fenêtre ouverte par le bouton **« + » patient** de l'écran principal.
+
+| Élément | Rôle |
+|---|---|
+| **Nom / Prénom** | Identité de l'état civil du patient. |
+| **Date de naissance & Sexe** | Calendrier + liste déroulante (Homme/Femme). |
+| **Poids / Taille** | Compteurs numériques, utiles au calcul des doses. |
+| **Numéro de sécurité sociale** | Identifiant administratif du patient. |
+| **Pathologie(s)** | Antécédents / pathologies du patient. |
+| **Allergies** | Cases à cocher reliant le patient à ses allergies. |
+| **Bouton « Créer »** | Enregistre le nouveau patient en base de données. |
+
+### 12.6 Détail d'une ordonnance
+
+![Détail d'une ordonnance](images_docs/06_detail_ordonnance.png)
+
+Fenêtre ouverte par **double-clic** sur une ligne de l'historique des ordonnances.
+
+| Élément | Rôle |
+|---|---|
+| **Lignes de médicaments** | Pour chaque médicament : dose, fréquence et durée du traitement. |
+| **Bouton « Supprimer l'ordonnance »** | Retire définitivement l'ordonnance de l'historique. |
+| **Bouton « Fermer »** | Ferme la fenêtre sans rien modifier. |
+
+### 12.7 Création d'une ordonnance
+
+![Nouvelle ordonnance](images_docs/07_nouvelle_ordonnance.png)
+
+Fenêtre ouverte par le bouton **« + » ordonnance**, pour le patient sélectionné.
+
+| Élément | Rôle |
+|---|---|
+| **Nom du médicament** | Liste déroulante des médicaments disponibles. |
+| **Durée du traitement** | Nombre de jours (ou autre unité) du traitement. |
+| **Fréquence** | Nombre de prises par jour (compteur + unité). |
+| **Dose** | Quantité par prise + unité (mg…). |
+| **Bouton « Valider » (ligne)** | Ajoute le médicament saisi au tableau ci-dessous. |
+| **Bouton « Retirer la ligne »** | Supprime la ligne sélectionnée du tableau. |
+| **Bouton « Valider » (final)** | Enregistre l'ordonnance complète pour le patient. |
 
 ---
 
